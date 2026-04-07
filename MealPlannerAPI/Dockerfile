@@ -2,13 +2,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy the project file and restore dependencies
-COPY ["MealPlannerAPI.csproj", "./"]
-RUN dotnet restore "./MealPlannerAPI.csproj"
+# THE WILDCARD TRICK: Grab any .csproj file regardless of exact casing
+COPY *.csproj ./
+RUN dotnet restore
 
 # Copy the rest of the code and compile it
 COPY . .
-RUN dotnet publish "MealPlannerAPI.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
 # Use the lighter ASP.NET runtime to actually run the app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
