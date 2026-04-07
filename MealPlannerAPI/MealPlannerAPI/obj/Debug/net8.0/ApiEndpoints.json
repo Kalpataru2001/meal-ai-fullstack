@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "MealPlannerAPI.Controllers.RecipeController",
+    "Method": "GenerateRecipe",
+    "RelativePath": "api/Recipe/generate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "MealPlannerAPI.Models.RecipeRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

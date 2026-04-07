@@ -1,0 +1,15 @@
+# .NET Core
+MealPlannerAPI/bin/
+MealPlannerAPI/obj/
+MealPlannerAPI/appsettings.Development.json
+.vs/
+MealPlannerAPI/.vs/
+
+# Angular / Node
+ai-meal-planner/node_modules/
+ai-meal-planner/dist/
+ai-meal-planner/.angular/
+
+# General OS files
+.DS_Store
+Thumbs.db
