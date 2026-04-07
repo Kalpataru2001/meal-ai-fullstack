@@ -1,0 +1,87 @@
+<ng-container *ngIf="supabase.session(); else authLayout">
+  <div
+    class="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <aside [class.translate-x-0]="isSidebarOpen" [class.-translate-x-full]="!isSidebarOpen"
+      class="fixed inset-y-0 left-0 z-50 w-64 transform bg-card-light dark:bg-card-dark border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col">
+
+      <div class="flex h-16 items-center px-6 border-b border-gray-200 dark:border-gray-800">
+        <div class="flex items-center gap-2 text-accent">
+          <lucide-icon [img]="icons.Utensils" size="24" strokeWidth="2.5"></lucide-icon>
+          <span class="text-xl font-bold tracking-tight">MealAI</span>
+        </div>
+      </div>
+
+      <nav class="flex-1 space-y-1 p-4 overflow-y-auto">
+        <a routerLink="/dashboard" routerLinkActive="bg-gray-100 dark:bg-gray-800 text-accent"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+          <lucide-icon [img]="icons.LayoutDashboard" size="18"></lucide-icon>
+          Dashboard
+        </a>
+        <a routerLink="/pantry"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+          <lucide-icon [img]="icons.Activity" size="18"></lucide-icon>
+          Pantry Tracker
+        </a>
+        <a routerLink="/recipes" routerLinkActive="bg-accent/10 text-accent font-medium"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+          <lucide-icon [img]="icons.ChefHat" size="20"></lucide-icon>
+          AI Chef
+        </a>
+        <a routerLink="/planner" routerLinkActive="bg-accent/10 text-accent font-medium" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+          <lucide-icon [img]="icons.Calendar" size="20"></lucide-icon>
+          Meal Planner
+        </a>
+        <a routerLink="/grocery-list" routerLinkActive="bg-accent/10 text-accent font-medium" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+          <lucide-icon [img]="icons.ShoppingCart" size="20"></lucide-icon>
+          Grocery List
+        </a>
+        <a routerLink="/settings" routerLinkActive="bg-accent/10 text-accent font-medium" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer mt-4 border-t border-gray-200 dark:border-gray-800 pt-4">
+          <lucide-icon [img]="icons.Settings" size="20"></lucide-icon>
+          Settings
+        </a>
+      </nav>
+    </aside>
+
+    <div *ngIf="isSidebarOpen" (click)="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 md:hidden"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+
+      <header
+        class="flex h-16 shrink-0 items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-card-light dark:bg-card-dark px-4 sm:px-6 transition-colors duration-300">
+        <button (click)="toggleSidebar()"
+          class="md:hidden p-2 -ml-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+          <lucide-icon [img]="icons.Menu" size="24"></lucide-icon>
+        </button>
+
+        <div class="flex items-center gap-4 ml-auto">
+          <button (click)="themeService.toggleTheme()"
+            class="rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400 transition-colors">
+            <lucide-icon *ngIf="themeService.themeSignal() === 'dark'" [img]="icons.Sun" size="20"></lucide-icon>
+            <lucide-icon *ngIf="themeService.themeSignal() === 'light'" [img]="icons.Moon" size="20"></lucide-icon>
+          </button>
+
+          <button
+            (click)="handleLogout()"
+            title="Log Out"
+            class="flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 transition-colors shadow-sm">
+            <lucide-icon [img]="icons.LogOut" size="16"></lucide-icon>
+          </button>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+</ng-container>
+<ng-template #authLayout>
+  <button (click)="themeService.toggleTheme()"
+    class="absolute top-4 right-4 z-50 rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400 transition-colors">
+    <lucide-icon *ngIf="themeService.themeSignal() === 'dark'" [img]="icons.Sun" size="20"></lucide-icon>
+    <lucide-icon *ngIf="themeService.themeSignal() === 'light'" [img]="icons.Moon" size="20"></lucide-icon>
+  </button>
+
+  <router-outlet></router-outlet>
+</ng-template>

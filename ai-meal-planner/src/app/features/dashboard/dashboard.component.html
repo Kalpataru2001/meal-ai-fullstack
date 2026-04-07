@@ -1,0 +1,153 @@
+<div class="max-w-7xl mx-auto space-y-8 animate-fade-in pb-10">
+  
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div>
+      <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight capitalize">
+        Good morning, {{ userName() }}
+      </h1>
+      <p class="text-gray-500 dark:text-gray-400 mt-1 text-lg">{{ todayDate() }}</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <a routerLink="/recipes" class="px-4 py-2 bg-accent/10 text-accent dark:bg-accent/20 border border-accent/20 rounded-full text-sm font-bold hover:bg-accent hover:text-white transition-all cursor-pointer">
+        High Protein 💪
+      </a>
+      <a routerLink="/recipes" class="px-4 py-2 bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 border border-orange-500/20 rounded-full text-sm font-bold hover:bg-orange-500 hover:text-white transition-all cursor-pointer">
+        Under 30 Mins ⏱️
+      </a>
+      <a routerLink="/recipes" class="px-4 py-2 bg-accent text-white shadow-md shadow-accent/30 rounded-full text-sm font-bold hover:bg-accent/90 hover:scale-105 transition-all cursor-pointer flex items-center gap-2">
+        <lucide-icon [img]="icons.Sparkles" size="16"></lucide-icon> Chef AI
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="lowStockItems().length > 0" class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+    <div class="p-3 bg-white dark:bg-card-dark rounded-xl text-amber-500 shadow-sm shrink-0">
+      <lucide-icon [img]="icons.AlertCircle" size="24"></lucide-icon>
+    </div>
+    <div class="flex-1">
+      <h3 class="text-sm font-bold text-amber-900 dark:text-amber-200">Pantry Update</h3>
+      <p class="text-sm text-amber-700 dark:text-amber-400/80 mt-0.5">
+        You have <span *ngFor="let item of lowStockItems(); let last=last" class="font-semibold capitalize">{{ item.name }}{{ last ? '' : ', ' }}</span> waiting in your kitchen. Let's cook them!
+      </p>
+    </div>
+    <a routerLink="/pantry" class="px-4 py-2 bg-white dark:bg-card-dark text-sm font-bold text-amber-700 dark:text-amber-400 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer hidden sm:block">
+      Open Pantry
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <div class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm flex flex-col items-center justify-center relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-32 h-32 bg-accent/10 rounded-full blur-3xl"></div>
+      
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6 w-full text-left">Calories Today</h2>
+      
+      <div class="relative w-40 h-40">
+        <canvas baseChart [data]="doughnutChartData" [options]="doughnutChartOptions" [type]="doughnutChartType"></canvas>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <lucide-icon [img]="icons.Flame" size="24" class="text-accent mb-1"></lucide-icon>
+          <span class="text-2xl font-black text-gray-900 dark:text-white leading-none">{{ animatedCalories() }}</span>
+        </div>
+      </div>
+      <p class="text-sm font-medium text-gray-500 mt-4">Goal: {{ calorieGoal() }} kcal</p>
+    </div>
+
+    <div class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm flex flex-col justify-center gap-6">
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white w-full">Macronutrients</h2>
+      
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm font-bold">
+          <span class="flex items-center gap-1.5 text-blue-600 dark:text-blue-400"><lucide-icon [img]="icons.Activity" size="14"></lucide-icon> Protein</span>
+          <span class="text-gray-900 dark:text-white">{{ macros().protein }}g</span>
+        </div>
+        <div class="w-full bg-blue-100 dark:bg-blue-900/30 rounded-full h-2.5">
+          <div class="bg-blue-500 h-2.5 rounded-full" [style.width.%]="(macros().protein / 150) * 100"></div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm font-bold">
+          <span class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400"><lucide-icon [img]="icons.Wheat" size="14"></lucide-icon> Carbs</span>
+          <span class="text-gray-900 dark:text-white">{{ macros().carbs }}g</span>
+        </div>
+        <div class="w-full bg-emerald-100 dark:bg-emerald-900/30 rounded-full h-2.5">
+          <div class="bg-emerald-500 h-2.5 rounded-full" [style.width.%]="(macros().carbs / 250) * 100"></div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm font-bold">
+          <span class="flex items-center gap-1.5 text-amber-600 dark:text-amber-400"><lucide-icon [img]="icons.Droplet" size="14"></lucide-icon> Fats</span>
+          <span class="text-gray-900 dark:text-white">{{ macros().fat }}g</span>
+        </div>
+        <div class="w-full bg-amber-100 dark:bg-amber-900/30 rounded-full h-2.5">
+          <div class="bg-amber-500 h-2.5 rounded-full" [style.width.%]="(macros().fat / 70) * 100"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-black dark:to-gray-900 rounded-3xl p-6 shadow-xl text-white flex flex-col justify-between relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-700">
+        <lucide-icon [img]="icons.Zap" size="120"></lucide-icon>
+      </div>
+      
+      <div class="relative z-10">
+        <h2 class="text-lg font-bold mb-1">Weekly Pulse</h2>
+        <p class="text-gray-400 text-sm mb-6">Days with planned meals</p>
+        
+        <div class="flex justify-between items-center px-1">
+          <div *ngFor="let day of weekStatus()" class="flex flex-col items-center gap-2">
+            <div [ngClass]="{'bg-accent text-white shadow-[0_0_15px_rgba(108,99,255,0.5)]': day.planned, 'bg-gray-700/50 text-gray-500': !day.planned}" 
+                 class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300">
+              {{ day.day }}
+            </div>
+          </div>
+        </div>
+
+        <a routerLink="/planner" class="mt-8 w-full block text-center py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl text-sm font-bold transition-colors cursor-pointer">
+          Open Calendar
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Meals for {{ currentDayName }}</h2>
+    </div>
+
+    <div *ngIf="todaysMeals().length === 0" class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 border-dashed rounded-3xl p-12 text-center shadow-sm">
+      <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+        <lucide-icon [img]="icons.Utensils" size="24"></lucide-icon>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white">Your plate is empty today</h3>
+      <p class="text-gray-500 dark:text-gray-400 mt-2 mb-6 max-w-md mx-auto">Generate a personalized recipe based on what's in your pantry and save it here.</p>
+      <a routerLink="/recipes" class="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white rounded-full font-bold hover:bg-accent/90 hover:scale-105 transition-all shadow-md">
+        <lucide-icon [img]="icons.Sparkles" size="18"></lucide-icon> Ask the AI Chef
+      </a>
+    </div>
+
+    <div *ngIf="todaysMeals().length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <div *ngFor="let meal of todaysMeals()" class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-3xl p-6 hover:border-accent/50 hover:shadow-lg transition-all group relative overflow-hidden cursor-pointer" routerLink="/planner">
+        <div class="absolute -top-6 -right-6 w-16 h-16 bg-accent/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+
+        <div class="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg text-xs font-black uppercase tracking-widest mb-4">
+          {{ meal.meal_type }}
+        </div>
+        
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white leading-tight group-hover:text-accent transition-colors">
+          {{ meal.recipe_title }}
+        </h3>
+        
+        <div class="flex flex-wrap items-center gap-4 mt-6 text-sm font-semibold text-gray-500 dark:text-gray-400">
+          <span class="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg"><lucide-icon [img]="icons.Clock" size="16"></lucide-icon> {{ meal.prep_time }}m</span>
+          <span class="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-900/10 text-orange-600 dark:text-orange-400 px-3 py-1.5 rounded-lg"><lucide-icon [img]="icons.Flame" size="16"></lucide-icon> {{ meal.calories }} kcal</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,84 @@
+<div class="max-w-3xl mx-auto space-y-8 animate-fade-in pb-12">
+  
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Account Settings</h1>
+    <p class="text-gray-500 dark:text-gray-400 mt-1">Manage your profile, dietary preferences, and AI Chef rules.</p>
+  </div>
+
+  <div *ngIf="isLoading()" class="flex justify-center py-20">
+    <lucide-icon [img]="icons.Loader2" size="32" class="animate-spin text-accent"></lucide-icon>
+  </div>
+
+  <form *ngIf="!isLoading()" [formGroup]="settingsForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    
+    <div class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-sm">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-4">
+        <lucide-icon [img]="icons.User" size="20" class="text-accent"></lucide-icon> Basic Info
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Display Name</label>
+          <input type="text" formControlName="name" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-gray-900 dark:text-white transition-all">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1.5">
+            <lucide-icon [img]="icons.Target" size="16"></lucide-icon> Daily Calorie Goal
+          </label>
+          <input type="number" formControlName="calorie_goal" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-gray-900 dark:text-white transition-all">
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-sm">
+      <div class="mb-6 border-b border-gray-200 dark:border-gray-800 pb-4">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <lucide-icon [img]="icons.Utensils" size="20" class="text-accent"></lucide-icon> AI Chef Settings
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">These settings guide the AI when generating your recipes.</p>
+      </div>
+      
+      <div class="mb-8">
+        <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Favorite Cuisines</label>
+        <div class="flex flex-wrap gap-2">
+          <button *ngFor="let cuisine of cuisineOptions" 
+                  type="button"
+                  (click)="toggleArrayItem('cuisine_prefs', cuisine)"
+                  [ngClass]="isItemActive('cuisine_prefs', cuisine) ? 'bg-accent text-white border-accent shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-accent hover:text-accent'"
+                  class="px-4 py-2 border rounded-full text-sm font-semibold transition-all duration-200">
+            {{ cuisine }}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-red-600 dark:text-red-400 mb-3 flex items-center gap-1.5">
+          <lucide-icon [img]="icons.AlertTriangle" size="16"></lucide-icon> Allergies & Restrictions
+        </label>
+        <div class="flex flex-wrap gap-2">
+          <button *ngFor="let allergy of allergyOptions" 
+                  type="button"
+                  (click)="toggleArrayItem('allergies', allergy)"
+                  [ngClass]="isItemActive('allergies', allergy) ? 'bg-red-500 text-white border-red-500 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-red-400 hover:text-red-500'"
+                  class="px-4 py-2 border rounded-full text-sm font-semibold transition-all duration-200">
+            {{ allergy }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-4 pt-4">
+      <span *ngIf="saveSuccess()" class="text-emerald-500 font-bold text-sm animate-fade-in">
+        Settings saved successfully!
+      </span>
+      <button type="submit" 
+              [disabled]="settingsForm.invalid || !settingsForm.dirty || isSaving()"
+              class="flex items-center gap-2 px-8 py-3 bg-accent text-white rounded-xl font-bold shadow-lg shadow-accent/20 hover:bg-accent/90 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed">
+        <lucide-icon *ngIf="isSaving()" [img]="icons.Loader2" size="20" class="animate-spin"></lucide-icon>
+        <lucide-icon *ngIf="!isSaving()" [img]="icons.Save" size="20"></lucide-icon>
+        {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+
+  </form>
+</div>

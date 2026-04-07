@@ -1,0 +1,127 @@
+<div class="max-w-7xl mx-auto h-full flex flex-col animate-fade-in">
+  
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Pantry Tracker</h1>
+      <p class="text-gray-500 dark:text-gray-400 mt-1">Manage your ingredients and minimize food waste.</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="relative w-full sm:w-64">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+          <lucide-icon [img]="icons.Search" size="18"></lucide-icon>
+        </div>
+        <input 
+          type="text" 
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          class="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-card-dark text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-accent outline-none shadow-sm transition-colors"
+          placeholder="Search ingredients..."
+        >
+      </div>
+
+      <button 
+        (click)="openModal()"
+        class="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors shadow-sm shrink-0">
+        <lucide-icon [img]="icons.Plus" size="18"></lucide-icon>
+        <span class="hidden sm:inline">Add Item</span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading()" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div *ngFor="let i of [1,2,3,4]" class="h-32 bg-gray-200 dark:bg-gray-800 rounded-2xl animate-pulse"></div>
+  </div>
+
+  <div *ngIf="!isLoading() && filteredItems().length === 0" class="flex-1 flex flex-col items-center justify-center text-center py-12">
+    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4 text-gray-400">
+      <lucide-icon [img]="icons.Search" size="24"></lucide-icon>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">No items found</h3>
+    <p class="text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
+      {{ items().length === 0 ? "Your pantry is empty. Click 'Add Item' to start tracking your ingredients." : "No ingredients match your search query." }}
+    </p>
+  </div>
+
+  <div *ngIf="!isLoading() && filteredItems().length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-8">
+    <div *ngFor="let item of filteredItems()" class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm hover:border-accent/50 transition-colors group relative">
+      
+      <button 
+        (click)="deleteItem(item.id)"
+        class="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md opacity-0 group-hover:opacity-100 transition-all">
+        <lucide-icon [img]="icons.Trash2" size="16"></lucide-icon>
+      </button>
+
+      <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 capitalize pr-8">{{ item.name }}</h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ item.quantity }} {{ item.unit }}</p>
+
+      <div class="mt-4 flex items-center">
+        @let status = getExpiryStatus(item.expiry_date);
+        
+        <div *ngIf="status.status === 'expired'" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-medium border border-red-200 dark:border-red-800/50">
+          <lucide-icon [img]="icons.AlertCircle" size="14"></lucide-icon>
+          Expired {{ Math.abs(status.days) }} days ago
+        </div>
+
+        <div *ngIf="status.status === 'warning'" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-xs font-medium border border-amber-200 dark:border-amber-800/50">
+          <lucide-icon [img]="icons.Clock" size="14"></lucide-icon>
+          Expiring in {{ status.days }} days
+        </div>
+
+        <div *ngIf="status.status === 'safe'" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800/50">
+          <lucide-icon [img]="icons.CheckCircle2" size="14"></lucide-icon>
+          Good for {{ status.days }} days
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div *ngIf="isModalOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+  <div class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+    
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Ingredient</h2>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+        <lucide-icon [img]="icons.X" size="20"></lucide-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ingredient Name</label>
+        <input type="text" formControlName="name" class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-accent outline-none" placeholder="e.g. Chicken Breast">
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
+          <input type="number" formControlName="quantity" class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-accent outline-none" placeholder="1">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unit</label>
+          <select formControlName="unit" class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-accent outline-none">
+            <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expiry Date</label>
+        <input type="date" formControlName="expiry_date" class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-accent outline-none">
+      </div>
+
+      <div class="pt-4 flex gap-3">
+        <button type="button" (click)="closeModal()" class="flex-1 py-2 px-4 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="itemForm.invalid" class="flex-1 py-2 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-accent hover:bg-accent/90 disabled:opacity-50 transition-colors">
+          Save Item
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

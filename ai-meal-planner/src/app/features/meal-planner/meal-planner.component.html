@@ -1,0 +1,168 @@
+<div class="max-w-7xl mx-auto h-full flex flex-col animate-fade-in">
+
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-3">
+            <lucide-icon [img]="icons.Calendar" size="32" class="text-accent"></lucide-icon>
+            Weekly Planner
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">Plan your meals for the week to stay on track.</p>
+    </div>
+
+    <div *ngIf="isLoading()" class="flex justify-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+    </div>
+
+    <div *ngIf="!isLoading()" class="flex-1 overflow-x-auto pb-6">
+        <div class="inline-flex gap-4 min-w-full">
+
+            <div *ngFor="let day of days" class="w-72 flex-shrink-0 flex flex-col gap-4">
+
+                <div
+                    class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-center shadow-sm">
+                    <h2 class="font-bold text-gray-900 dark:text-gray-100">{{ day }}</h2>
+                </div>
+
+                <div *ngFor="let type of mealTypes" class="flex flex-col gap-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">{{ type
+                        }}</h3>
+
+                    <div *ngIf="getMeal(day, type) as meal" (click)="openViewModal(meal)"
+                        class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm group relative hover:border-accent/50 hover:shadow-md transition-all cursor-pointer">
+
+                        <button (click)="deleteMeal(meal.id); $event.stopPropagation()"
+                            class="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md opacity-0 group-hover:opacity-100 transition-all z-10">
+                            <lucide-icon [img]="icons.Trash2" size="16"></lucide-icon>
+                        </button>
+
+                        <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-3 pr-6 leading-tight">{{
+                            meal.recipe_title }}</h4>
+
+                        <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                            <span class="flex items-center gap-1"><lucide-icon [img]="icons.Clock"
+                                    size="12"></lucide-icon> {{ meal.prep_time }}m</span>
+                            <span class="flex items-center gap-1"><lucide-icon [img]="icons.Flame" size="12"
+                                    class="text-orange-500"></lucide-icon> {{ meal.calories }} kcal</span>
+                        </div>
+                    </div>
+
+                    <button *ngIf="!getMeal(day, type)" (click)="openAddModal(day, type)"
+                        class="h-24 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:text-accent hover:border-accent hover:bg-accent/5 transition-all group">
+                        <lucide-icon [img]="icons.Plus" size="20"
+                            class="mb-1 group-hover:scale-110 transition-transform"></lucide-icon>
+                        <span class="text-xs font-medium">Add {{ type }}</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div *ngIf="isModalOpen()"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+    <div
+        class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Add {{ selectedMealType() }} for {{
+                selectedDay() }}</h2>
+            <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <lucide-icon [img]="icons.X" size="20"></lucide-icon>
+            </button>
+        </div>
+
+        <form [formGroup]="mealForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Recipe Title</label>
+                <input type="text" formControlName="recipe_title"
+                    class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 outline-none focus:border-accent">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Calories</label>
+                    <input type="number" formControlName="calories"
+                        class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 outline-none focus:border-accent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prep Time
+                        (mins)</label>
+                    <input type="number" formControlName="prep_time"
+                        class="block w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 outline-none focus:border-accent">
+                </div>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+                <button type="button" (click)="closeModal()"
+                    class="flex-1 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">Cancel</button>
+                <button type="submit" [disabled]="mealForm.invalid"
+                    class="flex-1 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/90 disabled:opacity-50">Save
+                    Meal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div *ngIf="selectedViewMeal()"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+    <div
+        class="bg-card-light dark:bg-card-dark border border-gray-200 dark:border-gray-800 w-full max-w-2xl max-h-[85vh] rounded-2xl shadow-xl flex flex-col overflow-hidden">
+
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ selectedViewMeal()?.recipe_title }}
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">
+                    {{ selectedViewMeal()?.day_of_week }} • {{ selectedViewMeal()?.meal_type }}
+                </p>
+            </div>
+            <button (click)="closeViewModal()"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 bg-gray-100 dark:bg-gray-800 p-2 rounded-full transition-colors">
+                <lucide-icon [img]="icons.X" size="20"></lucide-icon>
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-8" *ngIf="selectedViewMeal()?.recipe_data as recipe">
+
+            <div>
+                <h3
+                    class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 border-b border-gray-200 dark:border-gray-800 pb-2">
+                    Ingredients</h3>
+                <ul class="space-y-2">
+                    <li *ngFor="let item of recipe.ingredients" class="flex justify-between text-sm">
+                        <span class="text-gray-700 dark:text-gray-300 capitalize">{{ item.name }}</span>
+                        <span class="text-gray-500 font-medium">{{ item.amount }} {{ item.unit }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
+                    <lucide-icon [img]="icons.ChefHat" size="24" class="text-accent"></lucide-icon>
+                    Step-by-Step Instructions
+                </h3>
+
+                <div class="relative border-l-2 border-gray-200 dark:border-gray-700 ml-4 space-y-8 pb-4">
+
+                    <div *ngFor="let step of recipe.steps; let i = index" class="relative pl-8 group">
+
+                        <span
+                            class="absolute -left-[17px] top-0 flex items-center justify-center w-8 h-8 rounded-full bg-card-light dark:bg-card-dark border-2 border-accent text-accent font-bold text-sm shadow-sm group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+                            {{ i + 1 }}
+                        </span>
+
+                        <div
+                            class="bg-gray-50 dark:bg-gray-800/40 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50 group-hover:border-accent/40 group-hover:shadow-md transition-all duration-300">
+                            <p class="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                                {{ step }}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
