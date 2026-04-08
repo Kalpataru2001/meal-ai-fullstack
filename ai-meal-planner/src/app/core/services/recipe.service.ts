@@ -29,7 +29,7 @@ export class RecipeService {
 
   private http = inject(HttpClient);
   
-  private apiUrl = `${environment.apiUrl}/recipe`;
+  private apiUrl = `${environment.apiUrl}/Recipe`;
 
   async generateRecipe(request: RecipeRequest): Promise<GeneratedRecipe> {
     return firstValueFrom(this.http.post<GeneratedRecipe>(`${this.apiUrl}/generate`, request));
