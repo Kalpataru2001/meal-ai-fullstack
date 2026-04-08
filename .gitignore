@@ -1,9 +1,9 @@
 # .NET Core
-MealPlannerAPI/bin/
-MealPlannerAPI/obj/
-MealPlannerAPI/appsettings.Development.json
+**/bin/
+**/obj/
+**/appsettings.Development.json
 .vs/
-MealPlannerAPI/.vs/
+**/.vs/
 
 # Angular / Node
 ai-meal-planner/node_modules/
