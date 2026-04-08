@@ -33,3 +33,4 @@ C:\Projects\AI Meal Planner\MealPlannerAPI\MealPlannerAPI\obj\Debug\net8.0\refin
 C:\Projects\AI Meal Planner\MealPlannerAPI\MealPlannerAPI\obj\Debug\net8.0\MealPlannerAPI.pdb
 C:\Projects\AI Meal Planner\MealPlannerAPI\MealPlannerAPI\obj\Debug\net8.0\MealPlannerAPI.genruntimeconfig.cache
 C:\Projects\AI Meal Planner\MealPlannerAPI\MealPlannerAPI\obj\Debug\net8.0\ref\MealPlannerAPI.dll
+C:\Projects\AI Meal Planner\MealPlannerAPI\MealPlannerAPI\obj\Debug\net8.0\MealPlannerAPI.sourcelink.json
