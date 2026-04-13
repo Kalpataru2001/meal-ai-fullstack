@@ -7,7 +7,7 @@ namespace MealPlannerAPI.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
-        private const string ApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+        private const string ApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 
         public GeminiService(HttpClient httpClient, IConfiguration config)
         {
